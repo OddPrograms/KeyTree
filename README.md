@@ -7,6 +7,7 @@ Currently Supported Features:
 - Website name, Username/Email and Password are stored in formatted JSON
 - Search JSON if website already has Username/Email and Password
 - Generates random password with letters, numbers, and normally allowed special characters
+- default_email.txt and data.json automatically generate.
 
 TODO:
 - Add checkboxes for special characters being enabled/disabled
