@@ -84,6 +84,26 @@ def find_password():
         else:
             messagebox.showinfo(title="Error", message=f"No entry for {website}")
 
+def get_default_email():
+    try:
+        with open("default_email.txt") as default_data:
+            lines = 0
+            content = default_data.readlines()
+            for i in content:
+                if i:
+                    lines += 1
+            if lines == 2:
+                default_email = content[1]
+                return default_email
+            else:
+                default_email = ""
+                return default_email
+    except FileNotFoundError:
+        with open("default_email.txt", "w+") as default_data:
+            default_data.write("# This will set a default email, erase line 2 if not needed.")
+            default_data.write("")
+        return ""
+
 
 # UI SETUP
 window_width = 200
@@ -95,12 +115,9 @@ window.config(width=window_width, height=window_height, padx=20, pady=20, bg=bgc
 window.overrideredirect(1)
 
 
-
-# window.eval('tk::PlaceWindow . center')
 # Gets the requested values of the height and width.
 windowWidth = window.winfo_reqwidth()
 windowHeight = window.winfo_reqheight()
-#print("Width", windowWidth, "Height", windowHeight)
 
 # Gets both half the screen width/height and window width/height
 positionRight = int(window.winfo_screenwidth() / 2 - windowWidth / 1)
@@ -115,9 +132,6 @@ logo = PhotoImage(file="keytree.png")
 canvas.create_image(100, 100, image=logo)
 canvas.grid(column=1, row=0)
 
-# Sets window icon
-#TODO Change icon to something visible
-window.iconphoto(False, logo)
 
 # Labels
 website_label = Label(text="Website: ", bg=bgcolor)
@@ -134,16 +148,8 @@ website_input.focus()
 email_user_input = Entry(width=52)
 email_user_input.grid(column=1, row=2, columnspan=2)
 
-with open("default_email.txt") as default_data:
-    lines = 0
-    content = default_data.readlines()
-    for i in content:
-        if i:
-            lines += 1
-    if lines == 2:
-        default_email = content[1]
-    else:
-        default_email = ""
+default_email = str(get_default_email())
+
 email_user_input.insert(0, default_email)
 
 password_input = Entry(width=33)
