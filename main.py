@@ -202,7 +202,6 @@ password_length = Entry(width=3)
 password_length.grid(column=0, row=4, padx=1)
 
 # Buttons
-search_button_image = PhotoImage(file="assets/searchbutton.png")
 search_button = Button(text="Search", font=("sans-serif", 8), fg=buttontextcolor, bg=buttoncolor, width=14, command=find_password, bd=0)
 search_button.grid(column=2, row=1, sticky="N, S, W, E", pady=5)
 
