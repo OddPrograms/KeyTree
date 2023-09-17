@@ -1,10 +1,11 @@
 from tkinter import *
 from tkinter import messagebox
-import tkinter.scrolledtext as st
+# import tkinter.scrolledtext as st
 import string
 import secrets
 import pyclip
 import json
+import os
 
 
 # CONSTANTS
@@ -12,6 +13,21 @@ bgcolor = "#e5decf"
 buttoncolor = "#2a6417"
 buttontextcolor = "#ffffff"
 alphabet = string.ascii_letters + string.digits + string.punctuation
+
+
+# NEEDED FOR PYINSTALLER COMPILING IMAGES
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
+key_tree = resource_path(r"keytree.png")
+key_tree_icon = resource_path(r"keytreeicon.png")
 
 
 # PASSWORD GENERATOR
@@ -43,7 +59,6 @@ def save():
             "password": password
         }
     }
-
     if len(website) == 0 or len(password) == 0 or len(email) == 0:
         messagebox.showinfo(title="Missing Info", message="Field Empty!")
     else:
@@ -116,25 +131,33 @@ def get_default_email():
 
 # PASSWORD TO CLIPBOARD UI
 def password_to_clipboard():
-    pass_window_width = 800
-    pass_window_height = 400
     pass_window = Toplevel(window)
     pass_window.title("KeyTree Clipboard")
-    pass_window.config(width=pass_window_width, height=pass_window_height, bg=bgcolor)
-    pass_window_icon = PhotoImage(file = "assets/keytreeicon.png")
+    pass_window.config(bg=bgcolor)
+    pass_window_icon = PhotoImage(file = key_tree_icon)
     pass_window.iconphoto(False, pass_window_icon)
     # Gets the requested values of the height and width.
     passWindowWidth = pass_window.winfo_reqwidth()
     passWindowHeight = pass_window.winfo_reqheight()
     # Gets both half the screen width/height and window width/height
-    passPositionRight = int(pass_window.winfo_screenwidth() / 2.25 - windowWidth / 1)
+    passPositionRight = int(pass_window.winfo_screenwidth() / 2.95 - windowWidth / 1)
     passPositionDown = int(pass_window.winfo_screenheight() / 2 - windowHeight / 1)
     # Positions the window in the center of the page.
     pass_window.geometry("+{}+{}".format(passPositionRight, passPositionDown))
 
-    # button_area = st.ScrolledText(pass_window, width=30, height=8, font=("Times New Roman", 15))
-    # button_area.grid(column=0)
-    # button_area.configure(state='disabled')
+
+    button_area_canvas = Canvas(pass_window, bg=bgcolor, bd=0, highlightthickness=0, width=400, height=300)
+    button_scroll_bar = Scrollbar(master=pass_window, orient='vertical', command=button_area_canvas.yview)
+
+    button_area_frame = Frame(button_area_canvas, bg=bgcolor)
+    button_area_frame.bind('<Configure>', lambda e: button_area_canvas.configure(scrollregion=button_area_canvas.bbox('all')))
+    button_area_canvas.create_window((0, 0), window=button_area_frame, anchor='nw')
+    # button_area_canvas.configure(yscrollcommand=button_scroll_bar.set)
+
+    button_scroll_bar.pack(side='right', fill='y')
+    button_area_canvas.pack(side='left', fill='both', expand=True)
+    # button_scroll_bar.grid(column=1, row=0, sticky='e', rowspan=len(button))
+
 
     with open('data.json', 'r') as data_file:
         data = json.load(data_file)
@@ -150,9 +173,10 @@ def password_to_clipboard():
         for i in range(len(data.items())):
             def copy_from(x = i):
                 pyclip.copy(str(valueArray[x]["password"]))
-            new_button = button.append(Button(pass_window, text=keyArray[i],  font=("sans-serif", 8), fg=buttontextcolor, bg=buttoncolor, width=14, bd=0, command=copy_from))
-            # button_area.insert(i, new_button)
-            button[i].grid(column=0, row=i+1, sticky=W, pady=10, padx=15)
+            # new_button = button.append(Button(pass_window, text=keyArray[i],  font=("sans-serif", 8), fg=buttontextcolor, bg=buttoncolor, width=14, bd=0, command=copy_from))
+            new_button = button.append(Button(button_area_frame, text=keyArray[i],  font=("sans-serif", 8), fg=buttontextcolor, bg=buttoncolor, width=14, bd=0, command=copy_from))
+            # button[i].grid(column=0, row=i+1, sticky=W, pady=10, padx=100)
+            button[i].pack(pady=10, padx=150)
 
 
 # UI SETUP
@@ -173,9 +197,10 @@ positionDown = int(window.winfo_screenheight() / 2 - windowHeight / 1)
 window.geometry("+{}+{}".format(positionRight, positionDown))
 
 canvas = Canvas(width=window_width, height=window_height, bg=bgcolor, highlightthickness=0)
-logo = PhotoImage(file="assets/keytree.png")
+logo = PhotoImage(file=key_tree)
 canvas.create_image(100, 100, image=logo)
 canvas.grid(column=1, row=0)
+
 
 # Labels
 website_label = Label(text="Website: ", bg=bgcolor)
@@ -184,6 +209,7 @@ email_user_label = Label(text="Email/Username: ", bg=bgcolor)
 email_user_label.grid(column=0, row=2)
 password_label = Label(text="Password: ", bg=bgcolor)
 password_label.grid(column=0, row=3)
+
 
 # Inputs
 website_input = Entry(width=33)
@@ -200,6 +226,7 @@ password_input.grid(column=1, row=3, padx=1)
 
 password_length = Entry(width=3)
 password_length.grid(column=0, row=4, padx=1)
+
 
 # Buttons
 search_button = Button(text="Search", font=("sans-serif", 8), fg=buttontextcolor, bg=buttoncolor, width=14, command=find_password, bd=0)
