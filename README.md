@@ -12,4 +12,5 @@ Currently Supported Features:
 - Copy to clipboard ui with auto-population based on JSON information.
 
 TODO:
-- Add checkboxes for special characters being enabled/disabled
+- Add checkboxes for special characters being enabled/disabled.
+- Mac support.
