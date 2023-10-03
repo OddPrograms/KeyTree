@@ -83,6 +83,8 @@ def save():
                 json.dump(data, data_file, indent=4)
             website_input.delete(0, END)
             password_input.delete(0, END)
+    with open("data.json", "r") as origin, open("backup/data.backup.json", "w") as endpoint:
+        endpoint.write(origin.read())
 
 
 # CLOSE WINDOW
@@ -152,11 +154,9 @@ def password_to_clipboard():
     button_area_frame = Frame(button_area_canvas, bg=bgcolor)
     button_area_frame.bind('<Configure>', lambda e: button_area_canvas.configure(scrollregion=button_area_canvas.bbox('all')))
     button_area_canvas.create_window((0, 0), window=button_area_frame, anchor='nw')
-    # button_area_canvas.configure(yscrollcommand=button_scroll_bar.set)
 
     button_scroll_bar.pack(side='right', fill='y')
-    button_area_canvas.pack(side='left', fill='both', expand=True)
-    # button_scroll_bar.grid(column=1, row=0, sticky='e', rowspan=len(button))
+    button_area_canvas.pack(side='left', fill='both')
 
 
     with open('data.json', 'r') as data_file:
@@ -178,6 +178,14 @@ def password_to_clipboard():
             # button[i].grid(column=0, row=i+1, sticky=W, pady=10, padx=100)
             button[i].pack(pady=10, padx=150)
 
+# Directory Setup For Backup
+path = "backup"
+# Check whether the specified path exists or not
+isExist = os.path.exists(path)
+if not isExist:
+   # Create a new directory because it does not exist
+   os.makedirs(path)
+
 
 # UI SETUP
 window_width = 200
@@ -185,7 +193,9 @@ window_height = 200
 window = Tk()
 window.title("KeyTree")
 window.config(width=window_width, height=window_height, padx=20, pady=20, bg=bgcolor)
-window.overrideredirect(1)
+window_icon = PhotoImage(file=key_tree_icon)
+window.iconphoto(False, window_icon)
+# window.overrideredirect(1)
 
 # Gets the requested values of the height and width.
 windowWidth = window.winfo_reqwidth()
