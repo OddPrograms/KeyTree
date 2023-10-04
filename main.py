@@ -79,12 +79,11 @@ def save():
             data = new_data
 
         finally:
-            with open('data.json', 'w') as data_file:
+            with open('data.json', 'w') as data_file, open("backup/data.backup.json", "w") as data_backup:
                 json.dump(data, data_file, indent=4)
+                json.dump(data, data_backup, indent=4)
             website_input.delete(0, END)
             password_input.delete(0, END)
-    with open("data.json", "r") as origin, open("backup/data.backup.json", "w") as endpoint:
-        endpoint.write(origin.read())
 
 
 # CLOSE WINDOW
